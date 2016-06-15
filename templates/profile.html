@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile of </title>
+    <title>Profile of user.name</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<h1>Profile of {{name}}</h1>
+
+{% if user %}
+    <h1>Profile of {{user.name}}</h1>
+{% else %}
+    <h1>Please log in</h1>
+{% endif%}
+
 
 </body>
 </html>
