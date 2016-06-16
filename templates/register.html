@@ -7,16 +7,22 @@
 <body>
 
 {% if error %}
-    <h1 class="error">{{ error }}</h1>
+    <h3 class="error">{{ error }}</h3>
 {%  endif %}
 
+{% if messg %}
+    <h3 class="message">{{ messg }}</h3>
+{%  endif %}
 
+{% if registered != "True" %}
 <form  method="POST">
     login: <input type="text" name="login"><br>
-    name: <input type="text" name="name"><br>
     password: <input type="text" name="passwd"><br>
-    repeat password: <input type="text" name="passwdrep"><br>
     <input type="submit" value="Submit">
 </form>
+{% else %}
+    <a href="/login">Log in now!</a>
+{% endif %}
+
 </body>
 </html>

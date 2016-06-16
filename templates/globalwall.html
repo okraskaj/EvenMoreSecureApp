@@ -5,6 +5,18 @@
     <title>Wall of everyone</title>
 </head>
 <body>
+<ul>
+    {% for item in posts %}
+        <li>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.content }}</p>
+            <p>{{ item.author }}</p>
 
+        </li>
+    {% endfor %}
+
+    <a href="/newpost.html">Create a new post</a>
+
+</ul>
 </body>
 </html>
