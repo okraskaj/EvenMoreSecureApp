@@ -34,7 +34,7 @@ def login(login=None):
     if request.method == "POST":
         login = request.form['login']
         passwd = request.form['passwd']
-        resp = make_response(render_template('login.html', messg="Succesfully logged in!"))
+        resp = make_response(redirect('/posts', messg="Succesfully logged in!"))
 
         if is_login_in_db(login):
             real_password = users[login]['hashpasswd']
@@ -84,9 +84,8 @@ def register(user=None):
                     )
                     new_user['id'] = _id
                     users[login] = new_user
-                    return render_template('register.html',
-                                           messg="You've registered succesfully. You can now log in.",
-                                           registered="True" )
+                    return render_template('register.htl',
+                                           messg="You've registered succesfully. You can now log in.")
 
     elif request.method == "GET":
         return render_template("register.html")
@@ -101,7 +100,7 @@ def posts(user=None):
         new_post = {}
         new_post['title']=document['title']
         new_post['content']=document['content']
-        new_post['author_login']=document['author']
+        new_post['author']=document['author']
         new_post['id']=document['_id']
         posts.append(new_post)
 
@@ -136,7 +135,7 @@ def postnew(user=None):
                 new_post = {}
                 new_post['title']=document['title']
                 new_post['content']=document['content']
-                new_post['author']=document['author']
+                new_post['autor']=document['author']
                 new_post['id']=document['_id']
                 posts.append(new_post)
 
@@ -145,16 +144,5 @@ def postnew(user=None):
             return redirect('/login',error="To add new posts you have to be logged in")
 
 
-#
-# @app.route('/profile/<username>/post/<int::post_id>')
-# def posts(username,post_id):
-#         if username in users:
-#             user = users[username]
-#             if post_id in user.posts
-#             return 'This is the %s post numer %i' % username % post_id
-#         else:
-#             return 'This user is not created yet'
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug="True")

@@ -2,21 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wall of everyone</title>
+    <title>General wall</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-theme.css') }}">
 </head>
 <body>
+
+
+<nav class="navbar navbar-inverse">
+
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/posts">Facebuk</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/posts">All Posts</a></li>
+            <li><a href="/post/new">Add Post</a></li>
+            <li><a href="/register">Register</a></li>
+        </ul>
+        {% if username %}
+            <div class="navbar-right">
+                <a class="navbar-brand" href="#">{{ user.login }}</a>
+            </div>
+        {% else %}
+            <div class="navbar-right">
+                <a class="navbar-brand active" href="/login">Login</a>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+
+
 <ul>
     {% for item in posts %}
-        <li>
+        <li class="list-group-item">
             <h2>{{ item.title }}</h2>
             <p>{{ item.content }}</p>
-            <p>{{ item.author }}</p>
+            <p>{{ item.autor }}</p>
 
         </li>
     {% endfor %}
-
-    <a href="/newpost.html">Create a new post</a>
-
+    <div class="btn">
+        <a class="btn" href="/post/new">Create a new post</a>
+    </div>
 </ul>
 </body>
 </html>
