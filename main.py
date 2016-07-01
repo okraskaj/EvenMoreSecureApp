@@ -24,17 +24,12 @@ def is_login_in_db(login):
 
 
 @app.route('/')
-@app.route('/<user>')
-def index(user=None):
-    return render_template("profile.html", user=user)
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login(login=None):
     if request.method == "POST":
         login = request.form['login']
         passwd = request.form['passwd']
-        resp = make_response(redirect('/posts', messg="Succesfully logged in!"))
+        resp = make_response(render_template('login.html', messg="Succesfully logged in!"))
 
         if is_login_in_db(login):
             real_password = users[login]['hashpasswd']
@@ -84,8 +79,9 @@ def register(user=None):
                     )
                     new_user['id'] = _id
                     users[login] = new_user
-                    return render_template('register.htl',
-                                           messg="You've registered succesfully. You can now log in.")
+                    return redirect('/login')
+                        #render_template('register.html',
+                         #                  messg="You've registered succesfully. You can now log in.")
 
     elif request.method == "GET":
         return render_template("register.html")
@@ -141,7 +137,8 @@ def postnew(user=None):
 
             return render_template('newpost.html',posts = posts)
         else:
-            return redirect('/login',error="To add new posts you have to be logged in")
+            return redirect('/login')
+                            #,error="To add new posts you have to be logged in")
 
 
 if __name__ == '__main__':
