@@ -1,0 +1,13 @@
+web:
+  build: .
+  ports:
+   - "3000:3000"   
+  expose:
+   - "3000"
+   - "5000"
+  volumes:
+   - .:/SecureApp
+  links:
+   - db
+db:
+  image: mongo

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 from flask import Flask, request, render_template, make_response, redirect
 from pymongo import MongoClient
 import uuid
@@ -7,7 +8,8 @@ from pass_cor import hash_password, check_password, calculate_entropy
 
 app = Flask(__name__)
 
-client = MongoClient("mongodb://localhost")
+client = MongoClient(
+	os.environ['DB_PORT_27017_TCP_ADDR'],27017)
 db = client.facebuk
 usersdb = db.users
 users = {}
@@ -142,4 +144,5 @@ def postnew(user=None):
 
 
 if __name__ == '__main__':
-    app.run(debug="True")
+    app.run(host='0.0.0.0',port=3000,debug="True")
+
