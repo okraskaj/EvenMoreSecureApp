@@ -32,13 +32,13 @@ def login(login=None, message=None):
     if request.method == "POST":
         login = request.form['login']
         passwd = request.form['passwd']
-        resp = make_response(render_template('login.html', message="Succesfully logged in!"))
 
         if is_login_in_db(login):
             real_password = users[login]['hashpasswd']
             if check_password(real_password, passwd):
                 cookie = str(uuid.uuid4().hex)+":"+login
                 users[login]['cookie'] = cookie
+                resp = make_response(render_template('login.html', user=login, message="Succesfully logged in!"))
                 resp.set_cookie('logged', cookie)
                 return resp
             else:
@@ -108,7 +108,7 @@ def posts(user=None):
             new_post = {}
             new_post['title']=document['title']
             new_post['content']=document['content']
-            new_post['author']=document['author']
+            new_post['autor']=document['author']
             new_post['id']=document['_id']
             posts.append(new_post)
 
@@ -141,16 +141,16 @@ def postnew(user=None):
         elif request.method == "GET":
             posts_raw = db.posts.find()
             posts = []
-            if cookie and users[local_login]['cookie'] == cookie:
-                for document in posts_raw:
-                    new_post = {}
-                    new_post['title']=document['title']
-                    new_post['content']=document['content']
-                    new_post['autor']=document['author']
-                    new_post['id']=document['_id']
-                    posts.append(new_post)
+            #if cookie and users[local_login]['cookie'] == cookie:
+            for document in posts_raw:
+                new_post = {}
+                new_post['title']=document['title']
+                new_post['content']=document['content']
+                new_post['autor']=document['author']
+                new_post['id']=document['_id']
+                posts.append(new_post)
 
-                return render_template('newpost.html',posts = posts)
+                return render_template('newpost.html',posts = posts,user=local_login)
             else:
                 return redirect('/login')
                                 #,error="To add new posts you have to be logged in")
