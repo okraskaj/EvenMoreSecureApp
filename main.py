@@ -9,7 +9,8 @@ from pass_cor import hash_password, check_password, calculate_entropy
 app = Flask(__name__)
 
 client = MongoClient(
-	os.environ['DB_PORT_27017_TCP_ADDR'],27017)
+#	os.environ['DB_PORT_27017_TCP_ADDR'],27017)
+       '0.0.0.0:27017')
 db = client.facebuk
 usersdb = db.users
 users = {}
