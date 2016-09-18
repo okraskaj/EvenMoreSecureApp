@@ -94,9 +94,6 @@ def register(user=None):
                     new_user['id'] = _id
                     users[login] = new_user
                     return redirect('/login')
-                        #render_template('register.html',
-                         #                  messg="You've registered succesfully. You can now log in.")
-
     elif request.method == "GET":
         return render_template("register.html")
 
@@ -125,6 +122,28 @@ def posts(user=None):
         return redirect(url_for('login', message="You have to be logged in to view posts."))
 
 
+@app.route('/myposts')
+def myposts(user=None):
+    if request.cookies.get('logged'):
+        cookie = request.cookies.get('logged')
+        user = cookie.split(':')[1]
+        print users[user]
+        posts_raw = db.posts.find()
+        posts = []
+
+        for document in posts_raw:
+            new_post = {}
+            new_post['title']=document['title']
+            new_post['content']=document['content']
+            new_post['autor']=document['author']
+            new_post['id']=document['_id']
+            posts.append(new_post)
+
+        return render_template('myposts.html',posts = posts, user= user)
+    else:
+        return redirect(url_for('login', message="You have to be logged in to view posts."))
+
+
 @app.route('/post/new', methods=['GET', 'POST'])
 def postnew(user=None):
     if request.cookies.get('logged'):
@@ -148,16 +167,7 @@ def postnew(user=None):
                     return redirect('/login')
 
             elif request.method == "GET":
-                # posts_raw = db.posts.find()
-                # posts = []
-                    return render_template('newpost.html', user=local_login)
-                #     for document in posts_raw:
-                #         new_post = {}
-                #         new_post['title']=document['title']
-                #         new_post['content']=document['content']
-                #         new_post['autor']=document['author']
-                #         new_post['id']=document['_id']
-                #         posts.append(new_post)
+                return render_template('newpost.html', user=local_login)
         else:
             return redirect(url_for('login', message="You have to be logged in to add new post."))
     else:

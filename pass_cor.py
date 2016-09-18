@@ -6,7 +6,9 @@ import uuid
 
 def hash_password(password):
     salt = uuid.uuid4().hex
-    return hashlib.sha256(salt.encode() + password.encode('utf-8')).hexdigest() + ':' + salt
+    return hashlib.sha256(
+        salt.encode() + password.encode('utf-8')
+    ).hexdigest() + ':' + salt
 
 def check_password(hashed_password, given_password):
     password, salt = hashed_password.split(':')

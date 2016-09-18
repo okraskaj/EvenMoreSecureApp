@@ -23,7 +23,7 @@
         </ul>
         {% if user %}
             <div class="navbar-right">
-                <a class="navbar-brand" href="/settings"><img src="{{ url_for('static', filename='images/icons/user.png') }}" style="display: inline; width:30px; "> {{ user }}</a>
+                <a class="navbar-brand" href="/myposts"><img src="{{ url_for('static', filename='images/icons/user.png') }}" style="display: inline; width:30px; "> {{ user }}</a>
                 <a class="navbar-brand" href="/logout"><img src="{{ url_for('static', filename='images/icons/exit.png') }}" style="display: inline; width:30px; "> Logout</a>
             </div>
         {% else %}
