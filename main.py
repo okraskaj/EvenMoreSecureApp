@@ -62,13 +62,18 @@ def register(user=None):
     if request.method == "POST":
         login = request.form['login']
         passwd = request.form['passwd'].strip()
+        passwdrp =request.form['passwd-rp'].strip()
+
         if is_login_in_db(login):
             return render_template('register.html',
                                    error="This login is alredy taken")
         else:
-            if len(passwd) < 5:
+            if passwd != passwdrp:
                 return render_template('register.html',
-                                       error="Password have to contain at least 5 characters")
+                                       error="Passwords have to be identical.")
+            elif len(passwd) < 5:
+                return render_template('register.html',
+                                       error="Password have to contain at least 5 characters.")
             else:
                 entropy = calculate_entropy(passwd)
                 if entropy < 47:
