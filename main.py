@@ -95,6 +95,9 @@ def register(user=None):
 def posts(user=None):
     posts_raw = db.posts.find()
     posts = []
+    cookie = request.cookies.get('logged')
+    user = cookie.split(':')[1]
+
     for document in posts_raw:
         new_post = {}
         new_post['title']=document['title']
@@ -103,7 +106,7 @@ def posts(user=None):
         new_post['id']=document['_id']
         posts.append(new_post)
 
-    return render_template('globalwall.html',posts = posts)
+    return render_template('globalwall.html',posts = posts, user= user)
 
 
 
@@ -111,7 +114,6 @@ def posts(user=None):
 def postnew(user=None):
     cookie = request.cookies.get('logged')
     local_login = cookie.split(':')[1]
-
     if request.method == "POST":
         if cookie and users[local_login]['cookie'] == cookie:
             title = request.form['title']
@@ -125,6 +127,8 @@ def postnew(user=None):
                 }
             )
             return redirect('/posts')
+        else:
+            return redirect('/login')
 
     elif request.method == "GET":
         posts_raw = db.posts.find()

@@ -1,37 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Creating post</title>
-     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-theme.css') }}">
-</head>
-<body>
-
-<nav class="navbar navbar-inverse">
-
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/posts">Facebuk</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li><a href="/posts">All Posts</a></li>
-            <li class="active"><a href="/post/new">Add Post</a></li>
-            <li><a href="/register">Register</a></li>
-            </ul>
-        {% if username %}
-            <div class="navbar-right">
-                <a class="navbar-brand" href="#">{{ user.login }}</a>
-            </div>
-        {% else %}
-            <div class="navbar-right">
-                <a class="navbar-brand active" href="/login">Login</a>
-            </div>
-        {% endif %}
-    </div>
-</nav>
-
-
+{% extends "base.html" %}
+{% block title %}Create new Post{% endblock %}
+{% block content %}
  <form class="form-horizontal" method="post" role="form">
 
         <div class="form-group">
@@ -55,7 +24,4 @@
             </div>
         </div>
     </form>
-
-
-</body>
-</html>
+{% endblock %}

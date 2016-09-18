@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %} - Facebuk</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-theme.css') }}">
+    {% endblock %}
+</head>
+<body>
+
+
+<nav class="navbar navbar-inverse">
+    {% block navbar %}
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/posts">Facebuk</a>
+        </div>#3B5998
+        <ul class="nav navbar-nav">
+            <li><a href="/posts">All Posts</a></li>
+            <li><a href="/post/new">Add Post</a></li>
+            <li><a href="/register">Register</a></li>
+        </ul>
+        {% if user %}
+            <div class="navbar-right">
+                <a class="navbar-brand" href="/settings">{{ user }}</a>
+                <a class="navbar-brand" href="/settings">Logout</a>
+            </div>
+        {% else %}
+            <div class="navbar-right">
+                <a class="navbar-brand active" href="/login">Login</a>
+            </div>
+        {% endif %}
+    </div>
+    {% endblock %}
+</nav>
+<div id="content">
+    {% block content %}{% endblock %}
+</div>
+
+{% block footer %}
+    </body>
+    </html>
+{% endblock %}
