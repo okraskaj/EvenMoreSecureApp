@@ -37,6 +37,7 @@ def login(login=None, message=None):
             real_password = users[login]['hashpasswd']
             if check_password(real_password, passwd):
                 cookie = str(uuid.uuid4().hex)+":"+login
+                global users
                 users[login]['cookie'] = cookie
                 resp = make_response(render_template('login.html', user=login, message="Succesfully logged in!"))
                 resp.set_cookie('logged', cookie)
@@ -99,10 +100,12 @@ def register(user=None):
 @app.route('/posts')
 def posts(user=None):
     if request.cookies.get('logged'):
-        posts_raw = db.posts.find()
-        posts = []
         cookie = request.cookies.get('logged')
         user = cookie.split(':')[1]
+        print users[user]
+        posts_raw = db.posts.find()
+        posts = []
+
 
         for document in posts_raw:
             new_post = {}
@@ -122,38 +125,36 @@ def postnew(user=None):
     if request.cookies.get('logged'):
         cookie = request.cookies.get('logged')
         local_login = cookie.split(':')[1]
-        if request.method == "POST":
-            if cookie and users[local_login]['cookie'] == cookie:
-                title = request.form['title']
-                content = request.form['content'].strip()
-                author = local_login
-                _id = db.posts.insert(
-                    {
-                        "title": title,
-                        "content": content,
-                        "author": author
-                    }
-                )
-                return redirect('/posts')
-            else:
-                return redirect('/login')
+        if cookie and users[local_login]['cookie'] == cookie:
+            if request.method == "POST":
+                if cookie and users[local_login]['cookie'] == cookie:
+                    title = request.form['title']
+                    content = request.form['content'].strip()
+                    author = local_login
+                    _id = db.posts.insert(
+                        {
+                            "title": title,
+                            "content": content,
+                            "author": author
+                        }
+                    )
+                    return redirect('/posts')
+                else:
+                    return redirect('/login')
 
-        elif request.method == "GET":
-            posts_raw = db.posts.find()
-            posts = []
-            #if cookie and users[local_login]['cookie'] == cookie:
-            for document in posts_raw:
-                new_post = {}
-                new_post['title']=document['title']
-                new_post['content']=document['content']
-                new_post['autor']=document['author']
-                new_post['id']=document['_id']
-                posts.append(new_post)
-
-                return render_template('newpost.html',posts = posts,user=local_login)
-            else:
-                return redirect('/login')
-                                #,error="To add new posts you have to be logged in")
+            elif request.method == "GET":
+                # posts_raw = db.posts.find()
+                # posts = []
+                    return render_template('newpost.html', user=local_login)
+                #     for document in posts_raw:
+                #         new_post = {}
+                #         new_post['title']=document['title']
+                #         new_post['content']=document['content']
+                #         new_post['autor']=document['author']
+                #         new_post['id']=document['_id']
+                #         posts.append(new_post)
+        else:
+            return redirect(url_for('login', message="You have to be logged in to add new post."))
     else:
          return redirect(url_for('login', message="You have to be logged in to add new post."))
 
