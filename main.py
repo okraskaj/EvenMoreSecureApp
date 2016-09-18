@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from flask import Flask, request, render_template, make_response, redirect
+from flask import Flask, request, render_template, make_response, redirect,url_for
 from pymongo import MongoClient
 import uuid
 from pass_cor import hash_password, check_password, calculate_entropy
@@ -28,11 +28,11 @@ def is_login_in_db(login):
 
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
-def login(login=None):
+def login(login=None, message=None):
     if request.method == "POST":
         login = request.form['login']
         passwd = request.form['passwd']
-        resp = make_response(render_template('login.html', messg="Succesfully logged in!"))
+        resp = make_response(render_template('login.html', message="Succesfully logged in!"))
 
         if is_login_in_db(login):
             real_password = users[login]['hashpasswd']
@@ -42,14 +42,19 @@ def login(login=None):
                 resp.set_cookie('logged', cookie)
                 return resp
             else:
-                return render_template('login.html', error="Bad password or login")
+                return render_template('login.html', message="Bad password or login")
         else:
-            return render_template('login.html', error="Bad login or password")
-
-
+            return render_template('login.html', message="Bad login or password")
     elif request.method == "GET":
-        return render_template("login.html")
+        if request.args:
+            message = request.args['message']
+        return render_template("login.html",message=message)
 
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    resp = make_response(render_template('loggedout.html'))
+    resp.set_cookie('logged', '', expires=0)
+    return resp
 
 @app.route('/register', methods=['GET', 'POST'])
 def register(user=None):
@@ -93,60 +98,64 @@ def register(user=None):
 
 @app.route('/posts')
 def posts(user=None):
-    posts_raw = db.posts.find()
-    posts = []
-    cookie = request.cookies.get('logged')
-    user = cookie.split(':')[1]
+    if request.cookies.get('logged'):
+        posts_raw = db.posts.find()
+        posts = []
+        cookie = request.cookies.get('logged')
+        user = cookie.split(':')[1]
 
-    for document in posts_raw:
-        new_post = {}
-        new_post['title']=document['title']
-        new_post['content']=document['content']
-        new_post['author']=document['author']
-        new_post['id']=document['_id']
-        posts.append(new_post)
+        for document in posts_raw:
+            new_post = {}
+            new_post['title']=document['title']
+            new_post['content']=document['content']
+            new_post['author']=document['author']
+            new_post['id']=document['_id']
+            posts.append(new_post)
 
-    return render_template('globalwall.html',posts = posts, user= user)
-
+        return render_template('globalwall.html',posts = posts, user= user)
+    else:
+        return redirect(url_for('login', message="You have to be logged in to view posts."))
 
 
 @app.route('/post/new', methods=['GET', 'POST'])
 def postnew(user=None):
-    cookie = request.cookies.get('logged')
-    local_login = cookie.split(':')[1]
-    if request.method == "POST":
-        if cookie and users[local_login]['cookie'] == cookie:
-            title = request.form['title']
-            content = request.form['content'].strip()
-            author = local_login
-            _id = db.posts.insert(
-                {
-                    "title": title,
-                    "content": content,
-                    "author": author
-                }
-            )
-            return redirect('/posts')
-        else:
-            return redirect('/login')
+    if request.cookies.get('logged'):
+        cookie = request.cookies.get('logged')
+        local_login = cookie.split(':')[1]
+        if request.method == "POST":
+            if cookie and users[local_login]['cookie'] == cookie:
+                title = request.form['title']
+                content = request.form['content'].strip()
+                author = local_login
+                _id = db.posts.insert(
+                    {
+                        "title": title,
+                        "content": content,
+                        "author": author
+                    }
+                )
+                return redirect('/posts')
+            else:
+                return redirect('/login')
 
-    elif request.method == "GET":
-        posts_raw = db.posts.find()
-        posts = []
-        if cookie and users[local_login]['cookie'] == cookie:
-            for document in posts_raw:
-                new_post = {}
-                new_post['title']=document['title']
-                new_post['content']=document['content']
-                new_post['autor']=document['author']
-                new_post['id']=document['_id']
-                posts.append(new_post)
+        elif request.method == "GET":
+            posts_raw = db.posts.find()
+            posts = []
+            if cookie and users[local_login]['cookie'] == cookie:
+                for document in posts_raw:
+                    new_post = {}
+                    new_post['title']=document['title']
+                    new_post['content']=document['content']
+                    new_post['autor']=document['author']
+                    new_post['id']=document['_id']
+                    posts.append(new_post)
 
-            return render_template('newpost.html',posts = posts)
-        else:
-            return redirect('/login')
-                            #,error="To add new posts you have to be logged in")
-
+                return render_template('newpost.html',posts = posts)
+            else:
+                return redirect('/login')
+                                #,error="To add new posts you have to be logged in")
+    else:
+         return redirect(url_for('login', message="You have to be logged in to add new post."))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=3000,debug="True")
